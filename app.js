@@ -43,6 +43,8 @@ mongoose.connect(DATA_BASE, {
 
 app.use((req, res, next) => {
   const allowedCors = [
+    'https://syrup.nomoredomains.rocks',
+    'http://syrup.nomoredomains.rocks',
     'https://localhost:3000',
     'http://localhost:3000',
   ];
