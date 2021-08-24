@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const {
   NODE_ENV, PORT = 3000, DATA_BASE = 'mongodb://localhost:27017/moviesdb', JWT_SECRET = 'dev-secret-101',
 } = process.env;

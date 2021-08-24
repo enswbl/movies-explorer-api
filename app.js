@@ -1,5 +1,3 @@
-require('dotenv').config();
-
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -15,13 +13,13 @@ const path = require('path');
 
 const app = express();
 
+const limiter = require('./middlewares/rate-limiter');
+
+const routes = require('./routes/index');
+
 const { PORT, DATA_BASE } = require('./config');
 
-const { auth } = require('./middlewares/auth');
-
 const handleErrors = require('./middlewares/handleErrors');
-
-const NotFoundError = require('./errors/not-found-err');
 
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 
@@ -74,18 +72,13 @@ app.use((req, res, next) => {
 
 app.use(cors({ origin: true, credentials: true }));
 
+app.use(limiter);
+
 app.use(requestLogger);
 
 app.use(crashTest);
-app.use(require('./routes/sign-up'));
-app.use(require('./routes/sign-in'));
 
-app.use(auth, require('./routes/users'));
-app.use(auth, require('./routes/movies'));
-
-app.use('*', () => {
-  throw new NotFoundError('Запрашиваемый ресурс не найден');
-});
+app.use(routes);
 
 app.use(errorLogger);
 

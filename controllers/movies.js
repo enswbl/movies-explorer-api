@@ -43,7 +43,7 @@ const createMovie = (req, res, next) => {
     .then((movie) => res.send({ movie }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequestError('Переданы некорректные данные');
+        next(new BadRequestError('Переданы некорректные данные'));
       } else {
         next(err);
       }
@@ -60,8 +60,7 @@ const deleteMovie = (req, res, next) => {
 
       Movie.findByIdAndRemove(req.params.movieId)
         .orFail(new NotFoundError('Фильм с таким ID не найден'))
-        // eslint-disable-next-line no-shadow
-        .then((movie) => res.send({ movie }))
+        .then((removedMovie) => res.send({ removedMovie }))
         .catch(next);
     })
     .catch(next);
