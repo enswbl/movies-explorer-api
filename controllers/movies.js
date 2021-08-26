@@ -8,7 +8,7 @@ const { Error } = require('../errors/error-messages');
 
 const getMovies = (req, res, next) => {
   Movie.find({})
-    .orFail(new NotFoundError(Error.movieIdNotFound))
+    .orFail(new NotFoundError(Error.moviesNotFound))
     .then((movies) => res.send({ movies }))
     .catch(next);
 };
