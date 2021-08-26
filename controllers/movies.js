@@ -4,9 +4,11 @@ const NotFoundError = require('../errors/not-found-err');
 const BadRequestError = require('../errors/bad-request-err');
 const ForbiddenError = require('../errors/forbidden-err');
 
+const { Error } = require('../errors/error-messages');
+
 const getMovies = (req, res, next) => {
   Movie.find({})
-    .orFail(new NotFoundError('Фильмы не найдены'))
+    .orFail(new NotFoundError(Error.movieIdNotFound))
     .then((movies) => res.send({ movies }))
     .catch(next);
 };
@@ -43,7 +45,7 @@ const createMovie = (req, res, next) => {
     .then((movie) => res.send({ movie }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError('Переданы некорректные данные'));
+        next(new BadRequestError(Error.incorrectData));
       } else {
         next(err);
       }
@@ -52,14 +54,14 @@ const createMovie = (req, res, next) => {
 
 const deleteMovie = (req, res, next) => {
   Movie.findById(req.params.movieId)
-    .orFail(new NotFoundError('Фильм с таким ID не найден'))
+    .orFail(new NotFoundError(Error.movieIdNotFound))
     .then((movie) => {
       if (movie.owner.toString() !== req.user._id.toString()) {
-        throw new ForbiddenError('Это фильм другого пользователя');
+        throw new ForbiddenError(Error.invalidOwner);
       }
 
       Movie.findByIdAndRemove(req.params.movieId)
-        .orFail(new NotFoundError('Фильм с таким ID не найден'))
+        .orFail(new NotFoundError(Error.movieIdNotFound))
         .then((removedMovie) => res.send({ removedMovie }))
         .catch(next);
     })
